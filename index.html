@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jam Premium Custom</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+
+<style>
+body{
+margin:0;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:sans-serif;
+color:white;
+overflow:hidden;
+}
+
+/* SPLASH */
+#splash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:radial-gradient(circle,#111,#000);
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+animation:fadeOut 1s ease forwards;
+animation-delay:2.5s;
+}
+
+#splash h1{
+color:gold;
+font-size:32px;
+margin:0;
+text-shadow:0 0 20px gold;
+animation:zoom 2s ease;
+}
+
+#splash p{
+margin:5px;
+opacity:.8;
+}
+
+@keyframes zoom{
+from{transform:scale(.5);opacity:0;}
+to{transform:scale(1);opacity:1;}
+}
+
+@keyframes fadeOut{
+to{opacity:0;visibility:hidden;}
+}
+
+/* JAM */
+.jam{
+width:260px;
+height:260px;
+border-radius:50%;
+position:relative;
+cursor:pointer;
+transition:.3s;
+}
+
+.luxury{background:#000;border:4px solid gold;box-shadow:0 0 20px gold inset;}
+.islami{background:#013220;border:4px solid #0fa;box-shadow:0 0 20px #0fa inset;}
+.neon{background:#000;border:4px solid #0ff;box-shadow:0 0 20px #0ff;}
+.romantic{background:#2a001a;border:4px solid pink;box-shadow:0 0 20px pink;}
+.minimalist{background:#111;border:2px solid #555;}
+
+#angkaContainer span{
+position:absolute;
+left:50%;
+top:50%;
+font-weight:bold;
+opacity:0;
+animation:muncul .8s forwards;
+}
+
+.glow{text-shadow:0 0 10px #fff,0 0 20px gold;}
+@keyframes muncul{to{opacity:1;}}
+
+#fotoCenter{
+position:absolute;
+border-radius:50%;
+object-fit:cover;
+border:2px solid white;
+display:none;
+z-index:2;
+}
+
+.jarum{
+position:absolute;
+left:50%;
+bottom:50%;
+transform-origin:bottom;
+border-radius:4px;
+z-index:3;
+}
+
+.jamJarum{width:6px;height:60px;background:white;}
+.menitJarum{width:4px;height:90px;background:#aaa;}
+.detikJarum{width:2px;height:100px;background:red;}
+
+.titik{
+width:12px;height:12px;background:white;border-radius:50%;
+position:absolute;left:50%;top:50%;
+transform:translate(-50%,-50%);
+z-index:4;
+}
+
+.nama{
+position:absolute;
+width:100%;
+text-align:center;
+font-size:18px;
+}
+
+/* POPUP */
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000c;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.box{
+background:#111;
+padding:20px;
+border-radius:12px;
+width:90%;
+max-width:320px;
+color:#fff;
+}
+
+.box input,.box select{
+width:100%;
+margin:6px 0;
+padding:10px;
+background:#222;
+border:1px solid #555;
+color:#fff;
+border-radius:6px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:gold;
+color:black;
+border:none;
+border-radius:8px;
+font-weight:bold;
+margin-top:12px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+<h1>SmartHRShops</h1>
+<p>by tsetiadi</p>
+<p>Premium Custom Clock</p>
+</div>
+
+<div class="jam luxury" id="jamBox">
+<div id="angkaContainer"></div>
+<img id="fotoCenter">
+
+<div class="jarum jamJarum" id="jam"></div>
+<div class="jarum menitJarum" id="menit"></div>
+<div class="jarum detikJarum" id="detik"></div>
+<div class="titik"></div>
+<div class="nama" id="nama"></div>
+</div>
+
+<div class="popup" id="popup">
+<div class="box">
+
+<input id="namaInput" placeholder="Nama">
+
+<select id="styleJam">
+<option value="luxury">Luxury</option>
+<option value="islami">Islami</option>
+<option value="neon">Neon</option>
+<option value="romantic">Romantic</option>
+<option value="minimalist">Minimalist</option>
+</select>
+
+<select id="fontAngka">
+<option value="sans-serif">Default</option>
+<option value="cursive">Romantic</option>
+<option value="monospace">Modern</option>
+</select>
+
+<select id="modeAngka">
+<option value="arab">Angka</option>
+<option value="romawi">Romawi</option>
+<option value="icon">Icon</option>
+<option value="none">Tanpa Angka</option>
+</select>
+
+<input type="file" id="iconUpload">
+<label><input type="checkbox" id="glow"> Glow Angka</label>
+
+<hr>
+
+<input type="file" id="fotoUpload">
+<label><input type="checkbox" id="aktifFoto"> Tampilkan Foto</label>
+
+<hr>
+
+<label>Ukuran Jam</label>
+<input type="range" min="200" max="420" id="sizeRange">
+
+<button id="btnSave">Simpan</button>
+
+</div>
+</div>
+
+<script>
+const popup=document.getElementById("popup");
+const jamBox=document.getElementById("jamBox");
+const angkaContainer=document.getElementById("angkaContainer");
+const fotoCenter=document.getElementById("fotoCenter");
+const nama=document.getElementById("nama");
+
+const jam=document.getElementById("jam");
+const menit=document.getElementById("menit");
+const detik=document.getElementById("detik");
+
+const namaInput=document.getElementById("namaInput");
+const styleJam=document.getElementById("styleJam");
+const fontAngka=document.getElementById("fontAngka");
+const modeAngka=document.getElementById("modeAngka");
+const glow=document.getElementById("glow");
+const iconUpload=document.getElementById("iconUpload");
+const fotoUpload=document.getElementById("fotoUpload");
+const aktifFoto=document.getElementById("aktifFoto");
+const sizeRange=document.getElementById("sizeRange");
+const btnSave=document.getElementById("btnSave");
+
+let data={
+nama:localStorage.nama||"Nama Kamu",
+style:localStorage.style||"luxury",
+font:localStorage.font||"sans-serif",
+mode:localStorage.mode||"arab",
+glow:localStorage.glow=="true",
+icon:localStorage.icon||"",
+foto:localStorage.foto||"",
+aktifFoto:localStorage.aktifFoto=="true",
+size:Number(localStorage.size)||260
+};
+
+function jalanJam(){
+let n=new Date();
+let s=n.getSeconds()+n.getMilliseconds()/1000;
+let m=n.getMinutes()+s/60;
+let h=n.getHours()+m/60;
+
+jam.style.transform=`rotate(${h*30}deg)`;
+menit.style.transform=`rotate(${m*6}deg)`;
+detik.style.transform=`rotate(${s*6}deg)`;
+
+requestAnimationFrame(jalanJam);
+}
+jalanJam();
+
+function render(){
+jamBox.style.width=data.size+"px";
+jamBox.style.height=data.size+"px";
+nama.innerText=data.nama;
+nama.style.top=(data.size/2 + (data.size/4))+"px";
+jamBox.className="jam "+data.style;
+buatAngka();
+
+if(data.aktifFoto && data.foto){
+let fotoSize=data.size/3.5;
+fotoCenter.style.width=fotoSize+"px";
+fotoCenter.style.height=fotoSize+"px";
+fotoCenter.style.left=(data.size/2 - fotoSize/2)+"px";
+fotoCenter.style.top=(data.size/2 - fotoSize/2)+"px";
+fotoCenter.src=data.foto;
+fotoCenter.style.display="block";
+}else fotoCenter.style.display="none";
+}
+render();
+
+function buatAngka(){
+angkaContainer.innerHTML="";
+if(data.mode=="none") return;
+
+let romawi=["XII","I","II","III","IV","V","VI","VII","VIII","IX","X","XI"];
+
+for(let i=1;i<=12;i++){
+let span=document.createElement("span");
+span.style.fontFamily=data.font;
+if(data.glow) span.classList.add("glow");
+
+if(data.mode=="arab") span.innerText=i;
+else if(data.mode=="romawi") span.innerText=romawi[i%12];
+else if(data.mode=="icon"){
+let img=document.createElement("img");
+img.src=data.icon || "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
+img.width=22;
+span.appendChild(img);
+}
+
+angkaContainer.appendChild(span);
+
+setTimeout(()=>{
+let size=span.offsetWidth;
+let r=data.size/2 - 20 + size/6;
+let deg=i*30-90;
+span.style.transform=`rotate(${deg}deg) translate(${r}px) rotate(${-deg}deg) translate(-50%,-50%)`;
+},10);
+}
+}
+
+jamBox.onclick=()=>{
+popup.style.display="flex";
+namaInput.value=data.nama;
+styleJam.value=data.style;
+fontAngka.value=data.font;
+modeAngka.value=data.mode;
+glow.checked=data.glow;
+aktifFoto.checked=data.aktifFoto;
+sizeRange.value=data.size;
+};
+
+popup.onclick=e=>{
+if(e.target===popup) popup.style.display="none";
+};
+
+btnSave.onclick=()=>{
+data.nama=namaInput.value;
+data.style=styleJam.value;
+data.font=fontAngka.value;
+data.mode=modeAngka.value;
+data.glow=glow.checked;
+data.aktifFoto=aktifFoto.checked;
+data.size=sizeRange.value;
+
+if(iconUpload.files[0]){
+let r=new FileReader();
+r.onload=e=>{
+data.icon=e.target.result;
+localStorage.icon=data.icon;
+render();
+};
+r.readAsDataURL(iconUpload.files[0]);
+}
+
+if(fotoUpload.files[0]){
+let r=new FileReader();
+r.onload=e=>{
+data.foto=e.target.result;
+localStorage.foto=data.foto;
+render();
+};
+r.readAsDataURL(fotoUpload.files[0]);
+}
+
+localStorage.nama=data.nama;
+localStorage.style=data.style;
+localStorage.font=data.font;
+localStorage.mode=data.mode;
+localStorage.glow=data.glow;
+localStorage.aktifFoto=data.aktifFoto;
+localStorage.size=data.size;
+
+popup.style.display="none";
+render();
+};
+
+if ("serviceWorker" in navigator) {
+navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
